@@ -12,31 +12,32 @@
           {}
           word))
 
-(defn all-letters-accounted-for? [word input]
-  (= (letter-occurences word) (letter-occurences input)))
+(defn anagram-match? [word1 word2]
+  (= (letter-occurences word1) (letter-occurences word2)))
 
-(defn anagram-match? [word input]
-  (loop [remaining-word word]
-    (cond
-      (= word input) false
-      (empty? remaining-word) (all-letters-accounted-for? word input)
-      (>= (.indexOf input (str (first remaining-word))) 0) (recur (rest remaining-word))
-      :else false)))
+(defn reduced-by-letter-match [anagram-map]
+  (let [input-word (:input anagram-map)
+        results (reduce (fn [matched-words word]
+                          (if (anagram-match? word input-word)
+                            (conj matched-words word)
+                            matched-words))
+                        [] (:reduced-by-count anagram-map))]
+    (assoc anagram-map :results results)))
 
-(defn reduced-by-letter-match [reduced-words input]
-  (reduce (fn [matched-words word]
-            (if (anagram-match? word input)
-              (conj matched-words word)
-              matched-words)) [] reduced-words))
+(defn letter-count [anagram-map]
+  (let [letters (count (clojure.string/replace (:input anagram-map) #"\ " ""))]
+    (assoc anagram-map :count letters)))
 
-(defn letter-count [input]
-  (count (clojure.string/replace input #"\ " "")))
-
-(defn reduced-by-count [let-count]
-  (reduce (fn [out-list word]
-            (if (= let-count (count word))
-              (conj out-list word)
-              out-list)) [] words))
+(defn reduced-by-count [anagram-map]
+  (let [reduced-by-count (reduce (fn [out-list word]
+                                   (if (= (:count anagram-map) (count word))
+                                     (conj out-list word)
+                                     out-list))
+                                 [] words)]
+    (assoc anagram-map :reduced-by-count reduced-by-count)))
 
 (defn anagramize [input]
-  (reduced-by-letter-match (reduced-by-count (letter-count input)) input))
+  (-> {:input input}
+      letter-count
+      reduced-by-count
+      reduced-by-letter-match))

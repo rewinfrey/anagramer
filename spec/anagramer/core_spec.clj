@@ -9,37 +9,37 @@
 (describe "anagramize"
   (it "returns a vector of anagrams for a given string"
     (with-redef-word-list
-      (should== ["ate" "eat"] 
+      (should== {:results ["tea" "eat" "ate"] :input "tea" :count 3 :reduced-by-count ["tea" "eat" "ate" "cat" "hat"]}
                 (anagramize "tea"))))
 
   (it "returns an empty vector when no anagrams exist"
     (with-redef-word-list
-      (should== []
+      (should== {:results [] :input "hello" :count 5 :reduced-by-count ["ohelo" "chelo" "hollo"] }
                 (anagramize "hello")))))
 
 (describe "letter-count"
-  (it "returns 0 for empty string"
-    (should= 0
-             (letter-count "")))
+  (it "count is 0 for empty string"
+    (should== {:count 0 :input ""}
+             (letter-count {:input ""})))
 
-  (it "returns 1 for 'a'"
-    (should= 1
-             (letter-count "a")))
+  (it "count is 1 for 'a'"
+    (should== {:count 1 :input "a"}
+             (letter-count {:input "a"})))
 
-  (it "does not count spaces between letters"
-    (should= 3
-             (letter-count "a bc"))))
+  (it "count ignores spaces between letters"
+    (should== {:count 3 :input "a bc"}
+             (letter-count {:input "a bc"}))))
 
 (describe "reduced-by-count"
   (it "reduces word list by letter count"
     (with-redef-word-list
-      (should== ["ate" "eat" "tea" "cat" "hat"]
-                (reduced-by-count 3))))
+      (should== {:count 3 :input "tea" :reduced-by-count ["tea" "eat" "ate" "cat" "hat"]}
+                (reduced-by-count {:count 3 :input "tea"}))))
 
   (it "returns empty list when word list contains no words matching given letter count"
     (with-redef-word-list
-      (should= [] 
-               (reduced-by-count 4)))))
+      (should== {:count 4 :input "teaa" :reduced-by-count []}
+               (reduced-by-count {:count 4 :input "teaa" :reduced-by-count []})))))
 
 (describe "anagram-match?"
   (it "returns true if an input string and word contain exactly the same letters"
@@ -57,21 +57,8 @@
 (describe "reduced-by-letter-match"
   (it "reduces word list by matching letters of input vs word in word list"
     (with-redef-word-list
-      (should== ["ate" "eat"]
-                (reduced-by-letter-match  words "tea")))))
-
-(describe "all-letters-accounted-for?"
-  (it "ensures that anagram-like matches contain the same number of occurences of letters"
-    (should= true
-              (all-letters-accounted-for? "hello" "ohell")))
-
-  (it "ensures that repeated letters are properly accounted for"
-    (should= false
-             (all-letters-accounted-for? "hello" "ohelo")))
-
-  (it "ensures that letters not in the input word are not contained within the anagram result list"
-    (should= false
-             (all-letters-accounted-for? "hello" "ochel"))))
+      (should== {:results ["tea" "eat" "ate"] :count 3 :input "tea" :reduced-by-count ["tea" "eat" "ate" "cat" "hat"]}
+                (reduced-by-letter-match  {:count 3 :input "tea" :reduced-by-count ["tea" "eat" "ate" "cat" "hat"]})))))
 
 (describe "letter-occurences"
   (it "returns a map of letter keys, with the value of one occurence for the string 'abc'"

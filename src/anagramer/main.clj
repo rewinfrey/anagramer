@@ -4,4 +4,6 @@
   (:gen-class))
 
 (defn -main [& args]
-  (prn (anagramer/anagramize (first args))))
+  (println "")
+  (println "Anagram results: " (:results (anagramer/anagramize (first args))))
+  (println ""))
