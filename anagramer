@@ -1,0 +1,15 @@
+#! /usr/bin/env bash
+
+java=$(which java)
+lein=$(which lein)
+read -r firstline < ./project.clj
+version=$(echo $firstline | cut -f3 -d" " | sed -e "s/\"//g")
+exejar="target/anagramer-$version-standalone.jar"
+
+if [ -f $exejar ];
+then
+  $java -jar $exejar $1
+else
+  $lein uberjar > /dev/null
+  $java -jar $exejar $1
+fi
