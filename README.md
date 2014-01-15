@@ -11,25 +11,25 @@ $ git clone git@github.com:rewinfrey/anagramer.git
 $ cd anagramer
 ```
 
-Prepare the executable jar:
-
-`$ lein uberjar`
-
-(note: this requires [Leiningen](http://leiningen.org/))
-
-Find an anagram:
+Run the anagramer:
 
 ```
-$ java -jar target/anagramer-0.1.0-SNAPSHOT-standalone.jar <input word>
+$ ./anagramer <input string>
 ```
+
+Special Notes:
+
+1. The first time anagramer is executed it will build an executable jar using your system's Java binary
+2. This requires [Leiningen](http://leiningen.org/) in order to build the executable jar
 
 Example:
 
 ```
-$ java -jar target/anagramer-0.1.0-SNAPSHOT-standalone.jar tea
-```
+$ ./anagramer tea
 
-Returns ["eat", "ate", "eta", "tae"]
+Anagram results:  [ate eat eta tae tea]
+
+```
 
 ### License
 
