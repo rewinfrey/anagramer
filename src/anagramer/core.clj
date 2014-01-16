@@ -15,29 +15,31 @@
 (defn anagram-match? [word1 word2]
   (= (letter-occurences word1) (letter-occurences word2)))
 
-(defn reduced-by-letter-match [anagram-map]
+(defn reduce-by-letter-match [{:keys [reduced-by-count] :as anagram-map}]
   (let [input-word (:input anagram-map)
         results (reduce (fn [matched-words word]
                           (if (anagram-match? word input-word)
                             (conj matched-words word)
                             matched-words))
-                        [] (:reduced-by-count anagram-map))]
+                        []
+                        reduced-by-count)]
     (assoc anagram-map :results results)))
 
-(defn letter-count [anagram-map]
-  (let [letters (count (clojure.string/replace (:input anagram-map) #"\ " ""))]
-    (assoc anagram-map :count letters)))
+(defn count-letters [{:keys [input] :as anagram-map}]
+  (let [letters (count (clojure.string/replace input #"\ " ""))]
+    (assoc anagram-map :letter-count letters)))
 
-(defn reduced-by-count [anagram-map]
+(defn reduce-by-count [{:keys [letter-count] :as anagram-map}]
   (let [reduced-by-count (reduce (fn [out-list word]
-                                   (if (= (:count anagram-map) (count word))
+                                   (if (= letter-count (count word))
                                      (conj out-list word)
                                      out-list))
-                                 [] words)]
+                                 []
+                                 words)]
     (assoc anagram-map :reduced-by-count reduced-by-count)))
 
 (defn anagramize [input]
   (-> {:input input}
-      letter-count
-      reduced-by-count
-      reduced-by-letter-match))
+      count-letters
+      reduce-by-count
+      reduce-by-letter-match))
